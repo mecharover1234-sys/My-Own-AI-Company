@@ -3,6 +3,7 @@
 # 🔬 AI Research Team
 
 **8명의 AI 연구원이 당신의 아이디어를 함께 분석·토론해주는 데스크탑 앱**
+<img width="1264" height="891" alt="image" src="https://github.com/user-attachments/assets/fcf0ef75-b2a7-4704-9d3b-afcafa4ff5d3" />
 
 [![Release](https://img.shields.io/github/v/release/mecharover1234-sys/My-Own-AI-Company?style=flat-square&color=blueviolet)](https://github.com/mecharover1234-sys/My-Own-AI-Company/releases/latest)
 [![Platform](https://img.shields.io/badge/platform-Windows-blue?style=flat-square)](https://github.com/mecharover1234-sys/My-Own-AI-Company/releases/latest)
