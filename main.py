@@ -60,6 +60,19 @@ EMPLOYEES = [
         "system": "당신은 연구 아이디어의 혁신적 가능성을 탐색하는 전문가입니다. 이 연구가 가져올 긍정적 영향과 응용 분야를 3-4가지 제시해주세요. 300자 이내로 간결하게 한국어로 답변하세요.",
     },
     {
+        "key": "coder",
+        "name": "Eng. 임코드",
+        "role": "코드 구현 전문가",
+        "color": "#a29bfe",
+        "icon": "💻",
+        "system": (
+            "당신은 연구 아이디어의 기술적 구현 가능성을 검토하는 코드 전문가입니다. "
+            "채팅에서는 구현 접근법·핵심 기술 스택·예상 난이도를 3~5문장으로 간결하게 답하세요. "
+            "코드는 꼭 필요한 경우 핵심 로직 10줄 이내 스니펫만 제시하세요. "
+            "전체 구현 코드는 절대 작성하지 마세요 — 그것은 별도 코드 생성 기능에서 처리합니다."
+        ),
+    },
+    {
         "key": "methodologist",
         "name": "Dr. 박방법",
         "role": "연구방법론 전문가",
@@ -103,19 +116,6 @@ EMPLOYEES = [
             "동료 연구원들의 모든 의견을 종합해 ① 핵심 합의 사항 ② 주요 쟁점·미해결 과제 "
             "③ 최종 권고 방향의 세 섹션으로 구조화하여 정리해주세요. "
             "각 섹션은 2-3줄 이내로 간결하게, 전체 500자 이내 한국어로 작성하세요."
-        ),
-    },
-    {
-        "key": "coder",
-        "name": "Eng. 임코드",
-        "role": "코드 구현 전문가",
-        "color": "#a29bfe",
-        "icon": "💻",
-        "system": (
-            "당신은 연구 아이디어의 기술적 구현 가능성을 검토하는 코드 전문가입니다. "
-            "채팅에서는 구현 접근법·핵심 기술 스택·예상 난이도를 3~5문장으로 간결하게 답하세요. "
-            "코드는 꼭 필요한 경우 핵심 로직 10줄 이내 스니펫만 제시하세요. "
-            "전체 구현 코드는 절대 작성하지 마세요 — 그것은 별도 코드 생성 기능에서 처리합니다."
         ),
     },
 ]
@@ -505,7 +505,20 @@ def chat():
     whip  = body.get("whip", False)
     whip_note = "\n\n⚡ 빠른 응답 모드! 핵심만 2~3문장 이내로 간결하게 답변하세요. 장황한 설명은 금지." if whip else ""
 
-    active = [e for e in EMPLOYEES if targets is None or e["key"] in targets]
+    # 코드 관련 키워드 없으면 임코드 전체 호출에서 제외 (명시적 @멘션 시엔 포함)
+    CODE_KW = ('코드','구현','개발','프로그램','알고리즘','함수','모듈','라이브러리',
+               'code','implement','develop','algorithm','function','script','api')
+    msg_lower = message.lower()
+    is_code_related = any(kw in msg_lower for kw in CODE_KW)
+
+    def _include(e):
+        if targets is not None:
+            return e["key"] in targets
+        if e["key"] == "coder" and not is_code_related:
+            return False
+        return True
+
+    active = [e for e in EMPLOYEES if _include(e)]
     rq = queue.Queue()
 
     def worker(emp):
