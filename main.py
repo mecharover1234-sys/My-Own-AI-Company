@@ -511,10 +511,15 @@ def chat():
     msg_lower = message.lower()
     is_code_related = any(kw in msg_lower for kw in CODE_KW)
 
+    ALL_KEYS = {e["key"] for e in EMPLOYEES}
+    targets_set = set(targets) if targets else None
+    # 프론트가 전원 키를 보낼 때도 "전체 호출"로 간주
+    is_all = targets_set is None or targets_set >= ALL_KEYS
+
     def _include(e):
-        if targets is not None:
+        if not is_all:                              # 특정 @멘션 → 그 직원만
             return e["key"] in targets
-        if e["key"] == "coder" and not is_code_related:
+        if e["key"] == "coder" and not is_code_related:  # 전체 호출 + 비코드 → 임코드 제외
             return False
         return True
 
