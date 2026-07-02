@@ -1,0 +1,50 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'   # v1.0, v1.2.3 같은 태그 push 시 실행
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Generate icon
+        run: python -c "from main import _make_app_icon; _make_app_icon()"
+
+      - name: Build with PyInstaller
+        run: pyinstaller AI_Research_Team.spec --noconfirm --clean
+
+      - name: Zip dist folder
+        run: |
+          Compress-Archive -Path "dist\AI_Research_Team" `
+            -DestinationPath "dist\AI_Research_Team_Windows.zip" -Force
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/AI_Research_Team_Windows.zip
+          body: |
+            ## AI Research Team ${{ github.ref_name }}
+
+            ### 설치 방법
+            1. 아래 `AI_Research_Team_Windows.zip` 다운로드 후 압축 해제
+            2. [Claude CLI 설치](https://claude.ai/download) 후 `claude` 명령어로 로그인
+            3. `AI_Research_Team.exe` 실행
+
+            ### Requirements
+            - Windows 10 / 11
+            - Claude CLI (authenticated)

@@ -1,0 +1,19 @@
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# 빌드 산출물
+build/
+dist/
+*.spec.bak
+
+# 유저 데이터 (배포 시 포함 안 함)
+chat_history.json
+exports/
+app_icon.ico
+
+# 개발용 스크립트
+debug_windows.py
+test_icon.py
